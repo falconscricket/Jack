@@ -72,29 +72,37 @@ class LightHere:
         self._ui_clear()
         print(self._ui_brand())
 
+
     def setup(self):
-        print(self._ui_section("relay setup", "wire your telegram delivery point"))
+        self.TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+        self.CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
-        self.TOKEN = input(self._ui_prompt("bot token")).strip()
+        if not self.TOKEN and sys.stdin.isatty():
+            print(self._ui_section("relay setup", "wire your telegram delivery point"))
+            self.TOKEN = input(self._ui_prompt("bot token")).strip()
+
+        if not self.CHAT_ID and sys.stdin.isatty():
+            self.CHAT_ID = input(self._ui_prompt("chat id")).strip()
+
         if not self.TOKEN:
-            print(f"{self.RED}  ✖ bot token missing.{self.RESET}")
-            sys.exit()
+            print(f"{self.RED}  ✖ bot token missing (set BOT_TOKEN in Render env).{self.RESET}")
+            sys.exit(1)
 
-        self.CHAT_ID = input(self._ui_prompt("chat id")).strip()
         if not self.CHAT_ID:
-            print(f"{self.RED}  ✖ chat id missing.{self.RESET}")
-            sys.exit()
+            print(f"{self.RED}  ✖ chat id missing (set CHAT_ID in Render env).{self.RESET}")
+            sys.exit(1)
 
-        self._ui_clear()
-        print(self._ui_brand())
+            self._ui_clear()
+            print(self._ui_brand())
 
-        print(f"""{self.CYAN}
+            print(f"""{self.CYAN}
   ◆ runtime parameters
   {self.WHITE}├─ min followers   {self.MAGENTA}→  {self.WHITE}20
   {self.WHITE}├─ worker threads  {self.MAGENTA}→  {self.WHITE}80
   {self.WHITE}└─ concurrency     {self.MAGENTA}→  {self.WHITE}100
 {self.RESET}
 """)
+        
 
     def display(self):
         self._ui_clear()
